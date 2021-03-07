@@ -19,7 +19,7 @@ namespace VK_Bot.Components
             {
                 string PossibleNameCommand = "";
                 string NameCommand = message.Split(' ')[0];
-                var access = additions.ContainsKey(Additions.ReplyUserId) && additions[Additions.ReplyUserId].ToLong() == -192454284 ? Access.Bot : Database.GetAccessInDatabase(additions[Additions.UserId]);
+                var access = additions.ContainsKey(Additions.ReplyUserId) && additions[Additions.ReplyUserId].ToLong() == -ConfigManager.Configs.IdGroup ? Access.Bot : Database.GetAccessInDatabase(additions[Additions.UserId]);
 
                 foreach (var command in GetCommand.GetCommands(access))
                 {
@@ -39,7 +39,7 @@ namespace VK_Bot.Components
 
                 return "Команды не существует".ToOutput();
             }
-            catch (Exception ex) { $"[Command][Execute]: {ex.Message}".Log(); return "Ошибка".ToOutput(); }
+            catch (Exception ex) { $"[Find_Commands][Execute]: {ex.Message}".Log(); return "Ошибка".ToOutput(); }
         }
 
         private static int Minimum(int a, int b, int c) => (a = a < b ? a : b) < c ? a : c;

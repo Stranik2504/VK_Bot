@@ -13,6 +13,8 @@ namespace VK_Bot.Components
 
     public static class Database
     {
+        public const string DataName = @"files/Data.log";
+
         public static Dictionary<Place, (string Search, string NameTable)> Default { get; private set; } = new Dictionary<Place, (string Search, string NameTable)>();
 
         private static AirtableBase _client;
@@ -127,7 +129,7 @@ namespace VK_Bot.Components
             try
             {
                 JArray arr = GetValueData<JArray>(Place.ClubCard, userId, "Промокоды").Field ?? new JArray();
-                foreach (var promocode in promocodes) { arr.AddFirst(GetValueData<string>(Place.Promocode, promocode, "-Id")); }
+                foreach (var promocode in promocodes) { arr.AddAnnotation(GetValueData<string>(Place.Promocode, promocode, "-Id")); }
 
                 Dictionary<string, object> Fields = new Dictionary<string, object>();
                 Fields.Add("Промокоды", arr);
@@ -306,7 +308,7 @@ namespace VK_Bot.Components
 
         public static void Log(long FromId, long ToId, long Points, string Move)
         {
-            try { File.AppendAllText(@"Data.log", "[" + DateTime.Now.ToString() + "]" + $"[FromId]: {FromId}, [ToId]: {ToId}, [Operation]: {Move}, [Points]: {Points}" + " \n"); } catch (Exception ex) { $"[Database][Log]: {ex.Message}".Log(); }
+            try { File.AppendAllText(DataName, "[" + DateTime.Now.ToString() + "]" + $"[FromId]: {FromId}, [ToId]: {ToId}, [Operation]: {Move}, [Points]: {Points}" + " \n"); } catch (Exception ex) { $"[Database][Log]: {ex.Message}".Log(); }
         }
 
         private static bool UpdateElement(AirtableBase client, string nameTable, string id, Dictionary<string, object> fields)
@@ -314,8 +316,8 @@ namespace VK_Bot.Components
             try
             {
                 var res = client.UpdateRecord(nameTable, new Fields() { FieldsCollection = fields }, id).Result;
-                if (!res.Success && res.AirtableApiError is AirtableInvalidRequestException) { $"[Database][UpdateElement]: {(res.AirtableApiError as AirtableInvalidRequestException).DetailedErrorMessage}".Log(); }
-                else { $"[Database][UpdateElement]: {res.AirtableApiError.ErrorMessage}".Log(); }
+                if (!res.Success) { if (res.AirtableApiError is AirtableInvalidRequestException) { $"[Database][UpdateElement]: {(res.AirtableApiError as AirtableInvalidRequestException).DetailedErrorMessage}".Log(); } else { $"[Database][UpdateElement]: {res.AirtableApiError.ErrorMessage}".Log(); } }
+
                 return res.Success;
             }
             catch { throw; }
@@ -324,10 +326,11 @@ namespace VK_Bot.Components
         private static (bool Success, string Id) CreateElement(AirtableBase client, string nameTable, Dictionary<string, object> fields)
         {
             try
-            {
+            {   
                 var res = client.CreateRecord(nameTable, new Fields() { FieldsCollection = fields }).Result;
-                if (!res.Success && res.AirtableApiError is AirtableInvalidRequestException) { $"[Database][CreateElement]: {(res.AirtableApiError as AirtableInvalidRequestException).DetailedErrorMessage}".Log(); }
-                else { $"[Database][CreateElement]: {res.AirtableApiError.ErrorMessage}".Log(); }
+
+                if (!res.Success) { if (res.AirtableApiError is AirtableInvalidRequestException) { $"[Database][CreateElement]: {(res.AirtableApiError as AirtableInvalidRequestException).DetailedErrorMessage}".Log(); } else { $"[Database][CreateElement]: {res.AirtableApiError.ErrorMessage}".Log(); } }
+
                 return (res.Success, res.Record.Id);
             }
             catch { throw; }
@@ -338,8 +341,9 @@ namespace VK_Bot.Components
             try
             {
                 var res = client.DeleteRecord(nameTable, id).Result;
-                if (!res.Success && res.AirtableApiError is AirtableInvalidRequestException) { $"[Database][DeleteElement]: {(res.AirtableApiError as AirtableInvalidRequestException).DetailedErrorMessage}".Log(); }
-                else { $"[Database][DeleteElement]: {res.AirtableApiError.ErrorMessage}".Log(); }
+                
+                if (!res.Success) { if (res.AirtableApiError is AirtableInvalidRequestException) { $"[Database][DeleteElement]: {(res.AirtableApiError as AirtableInvalidRequestException).DetailedErrorMessage}".Log(); } else { $"[Database][DeleteElement]: {res.AirtableApiError.ErrorMessage}".Log(); } }
+
                 return res.Success;
             }
             catch { throw; }

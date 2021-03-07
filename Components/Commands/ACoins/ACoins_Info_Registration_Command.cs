@@ -14,7 +14,7 @@ namespace VK_Bot.Components.Commands.ACoins
 
         public override Module GetModule() => Module.ACoins;
 
-        public override Access[] GetAccess() => SetAccess(Access.NotIndexed, Access.Programmer);
+        public override Access[] GetAccess() => SetAccess(Access.NotIndexed, Access.Admin, Access.Programmer);
 
         public override string Description() => "Команда информации о регистрации";
 
@@ -22,7 +22,7 @@ namespace VK_Bot.Components.Commands.ACoins
         {
             try
             {
-                return "В ответ на это сообщение введите свое настоящие ФИО и ожидайте ответа".ToOutput("/registration_in_database");
+                return "В ответ на это сообщение введите свое настоящие ФИО и ожидайте ответа(Тыкни на кнопку ответить по этому сообщению)".ToOutput("/registration_in_database");
             }
             catch (Exception ex) { $"[ACoins_Registration_Command]: {ex.Message}".Log(); }
 

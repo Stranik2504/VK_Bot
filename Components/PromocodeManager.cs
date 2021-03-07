@@ -10,8 +10,8 @@ namespace VK_Bot.Components
         public static Action LoadConfigAction;
         public static Action SaveConfigAction;
 
-        private const string NameFile = "Add_promocode.sav";
-        private readonly static Manager _manager = new Manager("Add_promocode.sav");
+        private const string NameFile = @"files/Add_promocode.sav";
+        private readonly static Manager _manager = new Manager(NameFile);
 
         static PromocodeManager()
         {

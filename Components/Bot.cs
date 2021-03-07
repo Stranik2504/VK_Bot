@@ -59,7 +59,7 @@ namespace VK_Bot.Components
         {
             try
             {
-                MessageKeyboard keyboard = CreateButton(_user.Users.Get(new long[] { userId }, ProfileFields.Domain, NameCase.Nom)[0].Domain);
+                MessageKeyboard keyboard = CreateButton(_user.Users.Get(new long[] { userId }, ProfileFields.Domain, NameCase.Nom)[0].Domain, userId);
 
                 if (message != "")
                 {
@@ -121,7 +121,7 @@ namespace VK_Bot.Components
             try { IsActive = false; } catch (Exception ex) { $"[Bot][StopBot]: {ex.Message}".Log(); }
         }
 
-        private static MessageKeyboard CreateButton(string domain)
+        private static MessageKeyboard CreateButton(string domain, long userId)
         {
             KeyboardBuilder keys = new KeyboardBuilder();
             bool isHaveButton = false;
@@ -143,7 +143,7 @@ namespace VK_Bot.Components
                     keys.AddButton(new MessageKeyboardButtonAction() { Label = "Количество ACoin", Payload = "{\"acion\":\"/acoins\"}", Type = KeyboardButtonActionType.Text }, KeyboardButtonColor.Primary);
                     keys.AddButton(new MessageKeyboardButtonAction() { Label = "Мой промокод", Payload = "{\"action\":\"/promocode\"}", Type = KeyboardButtonActionType.Text }, KeyboardButtonColor.Positive);
                 }
-                else
+                else if (!RegistrationManager.Users.ContainsUserId(userId))
                 {
                     if (ConfigManager.Configs.IsActivateACoinsButton && !ConfigManager.Configs.IsActivateACoins) { keys.AddLine(); }
                     keys.AddButton(new MessageKeyboardButtonAction() { Label = "Зарегистрироваться", Payload = "{\"acion\":\"/acoins_registration\"}", Type = KeyboardButtonActionType.Text }, KeyboardButtonColor.Positive);
@@ -255,10 +255,10 @@ namespace VK_Bot.Components
                         if (ConfigManager.Configs.IsActivateACoins) { answer = "Привет! Для получения количества ACoins, нажмите на кнопку или введите команду /acoins. Для получения промокода также нажмите на кнопку, или введите команду /promocode.".ToOutput(); }
                         else if (ConfigManager.Configs.IsActivateRaffle) { answer = new Commands.Prize.Info_Command().Move("", null); }
                     }
-                    else { answer = new ACoins_Info_Registration_Command().Move("", null); }
+                    else { answer = "Для использования команд надо зарегистрироваться)".ToOutput(); }
                 }
 
-                keyboard = CreateButton(domain);
+                keyboard = CreateButton(domain, message.Message.PeerId.Value);
 
                 if (answer != null && answer.Answer != "")
                 {

@@ -18,7 +18,7 @@ namespace VK_Bot.Components.Commands.ACoins
 
         public override Output Move(string message, Dictionary<Additions, string> additions)
         {
-            try { var promocode = GetPromocode(additions[Additions.Domain]); if (promocode == "" || promocode == " " || promocode == null) { return "Для создания промокода в ответ на это сообщение введите слово на латинском и ожидайте подтверждения модерации".ToOutput("/generate_promocode"); } return ("Ваш промокод(-ы): " + promocode).ToOutput(); } catch (Exception ex) { $"[Promocode_Command]: {ex.Message}".Log(); }
+            try { var promocode = GetPromocode(additions[Additions.Domain]); if (promocode == "" || promocode == " " || promocode == null) { return "Для создания промокода в ответ на это сообщение введите !!одно!! слово на латинском и ожидайте подтверждения модерации".ToOutput("/generate_promocode"); } return ("Ваш промокод(-ы): " + promocode).ToOutput(); } catch (Exception ex) { $"[Promocode_Command]: {ex.Message}".Log(); }
 
             return "Ошибка".ToOutput();
         }

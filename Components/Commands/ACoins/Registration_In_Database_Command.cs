@@ -11,7 +11,7 @@ namespace VK_Bot.Components.Commands.ACoins
 
         public override Module GetModule() => Module.ACoins;
 
-        public override Access[] GetAccess() => SetAccess(Access.NotIndexed, Access.Programmer);
+        public override Access[] GetAccess() => SetAccess(Access.NotIndexed, Access.Admin, Access.Programmer, Access.Bot);
 
         public override string Description() => "Команда для регистрации";
 
@@ -21,7 +21,9 @@ namespace VK_Bot.Components.Commands.ACoins
             {
                 if (!RegistrationManager.Users.ContainsUserId(additions[Additions.UserId].ToLong()))
                 {
-                    if (message.Split(' ').Length >= 2)
+                    string fioInfo = CheckFIO(message.Remove(0, (message.Split(' ')[0] + " ").Length));
+
+                    if (message.Split(' ').Length >= 2 && fioInfo == null)
                     {
                         string fio = message.Remove(0, (message.Split(' ')[0] + " ").Length);
 
@@ -32,9 +34,9 @@ namespace VK_Bot.Components.Commands.ACoins
 
                         if (!isTryOk) { $"[Registration_In_Database_Command][TrySendTriggerAdmins]: сообщение не отправленно".Log(); }
 
-                        return "Заявка отправлена. Ожидайте подтверждение администрации".ToOutput();
+                        return "Заявка отправлена. Ожидайте подтверждение администрации в течение двух дней".ToOutput();
                     }
-                    else { return "Неправильный ввод".ToOutput(); }
+                    else { return (fioInfo == null ? "Надо написать ФИО полностью(3 слова)" : fioInfo).ToOutput(); }
                 }
                 else { return "Запрос уже отправлен".ToOutput(); }
             }
@@ -49,6 +51,19 @@ namespace VK_Bot.Components.Commands.ACoins
             string output = "";
             if (idUser != null) { var wallet = Database.GetValueData<string>(Place.ClubCard, idUser, nameSearchField: "Номер", searchByField: "Владелец"); if (wallet.Id != null) { output += $", в таблице \"Клубная карта\": найден(Номер карты: {wallet.Field})"; } else { output += ", в таблице \"Клубная карта\": не найден"; } }
             return $"Юзер: {fio}({"https://vk.com/" + domain}) [В таблице \"Списки\": {(idUser != null ? "найден" : "не найден") + output}], хочет зарегистрироваться(Если вы поддверждаете регистрацию, то отправте в ответ на это сообщение: \"Да\", если её нет в таблице спииски. Если у юзера уже есть клубная крата, то отправте \"Да card {"{номер карты}"}\". Если есть запись в таблице \"Списки\", то отправте \"Да {"{ФИО из таблицы}"}\". Иначе отправьте \"Нет\")".ToOutput("/add_user " + userId + " " + domain.Replace(' ', '\0') + " {{" + fio + "}}");
-        } 
+        }
+
+        private string CheckFIO(string fio)
+        {
+            if (fio.Length == 3)
+            {
+                if (fio.IsLetters())
+                {
+                    return null;
+                }
+                else { return "ФИО не может содержать числа"; }
+            }
+            else { return "Надо написать ФИО полностью(3 слова)"; }
+        }
     }
 }

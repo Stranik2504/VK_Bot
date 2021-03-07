@@ -12,7 +12,7 @@ namespace VK_Bot.Components.Commands.ACoins
 
         public override Module GetModule() => Module.ACoins;
 
-        public override Access[] GetAccess() => SetAccess(Access.NotIndexed, Access.Programmer);
+        public override Access[] GetAccess() => SetAccess(Access.NotIndexed, Access.Admin, Access.Programmer, Access.Bot);
 
         public override string Description() => "Команда для генерации промокода";
 
@@ -24,7 +24,7 @@ namespace VK_Bot.Components.Commands.ACoins
                 {
                     if (new Promocode_Command().GetPromocode(additions[Additions.Domain]) == "")
                     {
-                        if (message.Split(' ').Length != 2)
+                        if (message.Split(' ').Length == 2)
                         {
                             string name_promocode = message.Split(' ')[1];
 
@@ -37,7 +37,7 @@ namespace VK_Bot.Components.Commands.ACoins
 
                                 if (!isTryOk) { $"[Generate_Promocode_Command][TrySendTriggerAdmins]: сообщение не отправленно".Log(); }
 
-                                return "Заявка отправлена. Ожидайте подтверждение администрации".ToOutput();
+                                return "Заявка отправлена. Ожидайте подтверждение администрации в течение двух дней".ToOutput();
                             }
                             else { return "Такой промокод уже создан, придумайте новое слово".ToOutput(); }
                         }

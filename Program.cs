@@ -11,8 +11,11 @@ namespace VK_Bot
 {
     class Program
     {
-        private readonly static Bot _bot = new Bot();
+        public const string ErrorLog = @"files/Errors.log";
+
         public static event Action reloadBot = () => { _bot.StopBot(); _bot.StartBot(); };
+
+        private readonly static Bot _bot = new Bot();
 
         static void Main(string[] args)
         {
@@ -64,19 +67,23 @@ namespace VK_Bot
                         output = "Bot stoped";
                         break;
                     case "/clear_log":
-                        StreamWriter writerLogs = new StreamWriter("Logs.log");
+                        StreamWriter writerLogs = new StreamWriter(ErrorLog);
                         writerLogs.Close();
                         output = "Logs cleared";
                         break;
+                    case "/info_errors":
+                        StreamReader readerLogs = new StreamReader(ErrorLog);
+                        Console.WriteLine(readerLogs.ReadToEnd());
+                        break;
                     case "/clear_data":
-                        StreamWriter writerData = new StreamWriter("Data.log");
+                        StreamWriter writerData = new StreamWriter(Database.DataName);
                         writerData.Close();
                         output = "Data long cleared";
                         break;
                     case "/clear":
-                        StreamWriter writerall = new StreamWriter("Logs.log");
+                        StreamWriter writerall = new StreamWriter(ErrorLog);
                         writerall.Close();
-                        writerall = new StreamWriter("Data.log");
+                        writerall = new StreamWriter(Database.DataName);
                         writerall.Close();
                         output = "All logs cleared";
                         break;
@@ -127,6 +134,7 @@ namespace VK_Bot
         private static void LoadParams()
         {
             ConfigManager.LoadConfigAction += _bot.ReloadParams;
+            ConfigManager.LoadConfigAction += () => { if (ConfigManager.Configs.IsActivateRaffle) { if (Directory.Exists("Avatar")) { Directory.CreateDirectory("Avatar"); } if (Directory.Exists("Photo")) { Directory.CreateDirectory("Photo"); } } };
             ConfigManager.LoadConfig();
 
             PromocodeManager.LoadPromocode();
@@ -140,13 +148,22 @@ namespace VK_Bot
     {
         public static void Log(this string log)
         {
-            try { File.AppendAllText(@"Errors.log", "[" + DateTime.Now.ToString() + "]" + log + " \n"); } catch { }
+            try { File.AppendAllText(Program.ErrorLog, "[" + DateTime.Now.ToString() + "]" + log + " \n"); } catch { }
         }
 
         public static long ToLong(this string num)
         {
             bool res = long.TryParse(num, out long number);
             return res ? number : -1;
+        }
+
+        public static bool IsLetters(this string num)
+        {
+            for (int i = 0; i < num.Length; i++)
+                if (!char.IsLetter(num[i]) && num[i] != ' ')
+                    return false;           
+            
+            return true;
         }
 
         public static void AddCommands(this List<Command> commands, IReadOnlyList<Command> newCommands)
@@ -202,10 +219,10 @@ namespace VK_Bot
         {
             string[] nums = num.Split('.');
 
-            if (nums[0].Length == 2 && nums[0][0] == '0') { nums[0] = nums[0].Remove(0, 1); }
-            if (nums[0].Length == 2 && nums[0][0] == '0') { nums[0] = nums[0].Remove(0, 1); }
+            if (nums[0].Length == 2 && nums[0][0] == '0') { try { nums[0] = nums[0].Remove(0, 1); } catch { } }
+            if (nums[1].Length == 2 && nums[1][0] == '0') { try { nums[1] = nums[1].Remove(0, 1); } catch { } }
 
-            return nums[1] + "." + nums[0] + "." + nums[2];
+            return nums[1] + "." + nums[0] + "." + nums[2];  
         }
 
         public static Dictionary<string, object> ToDictionary<T>(this (string NameField, T Param) field)

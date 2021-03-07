@@ -9,7 +9,7 @@ namespace VK_Bot.Components
         public static Action LoadConfigAction;
         public static Action SaveConfigAction;
 
-        private const string NameFile = "Config.conf";
+        private const string NameFile = @"files/Config.conf";
         private readonly static Manager _manager = new Manager(NameFile);
 
         static ConfigManager()

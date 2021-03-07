@@ -21,7 +21,7 @@ namespace VK_Bot.Components.Commands.ACoins
         {
             try
             {
-                if (additions.ContainsKey(Additions.ReplyUserId) && additions[Additions.ReplyUserId].ToLong() == -192454284)
+                if (additions.ContainsKey(Additions.ReplyUserId) && additions[Additions.ReplyUserId].ToLong() == -ConfigManager.Configs.IdGroup)
                 {
                     long userId = message.Split(' ')[1].ToLong();
                     string domain = message.Split(' ')[2];

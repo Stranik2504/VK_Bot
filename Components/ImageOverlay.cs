@@ -17,8 +17,9 @@ namespace VK_Bot.Components
         private const int Rounding = 30;
         private const int SizePrize = 60;
 
-        private static string _wayBackground = "Background.png";
-        private static string _wayBack = "Back.jpg";
+        private static string _wayBackground = @"Assets\Background.png";
+        private static string _nullAvatar = @"Assets\Null.png";
+        private static string _wayBack = @"Assets\Back.jpg";
 
         public static string CreateTexture(string nameTextureAvatar, string nameUser, string[] photos)
         {
@@ -26,7 +27,7 @@ namespace VK_Bot.Components
             {
                 Bitmap[] bitmaps = new Bitmap[10];
                 // Юзер фото
-                if (File.Exists($@"Avatar\{nameTextureAvatar}")) { bitmaps[0] = new Bitmap($@"Avatar\{nameTextureAvatar}"); } else { bitmaps[0] = new Bitmap($@"Avatar\null.png"); }
+                if (File.Exists($@"Avatar\{nameTextureAvatar}")) { bitmaps[0] = new Bitmap($@"Avatar\{nameTextureAvatar}"); } else { bitmaps[0] = new Bitmap(_nullAvatar); }
                 for (int i = 0; i < photos.Length; i++)
                 {
                     bitmaps[i + 1] = new Bitmap(photos[i]);
@@ -106,6 +107,7 @@ namespace VK_Bot.Components
         {
             try
             {
+                firstImage = new Bitmap(firstImage, firstSize);
                 Graphics graph = Graphics.FromImage(firstImage);
                 graph.CompositingMode = CompositingMode.SourceOver;
 
@@ -132,6 +134,7 @@ namespace VK_Bot.Components
         {
             try
             {
+                firstImage = new Bitmap(firstImage, firstSize);
                 Graphics graph = Graphics.FromImage(firstImage);
                 graph.CompositingMode = CompositingMode.SourceOver;
 

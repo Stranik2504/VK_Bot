@@ -10,7 +10,7 @@ namespace VK_Bot.Components
         public static Action LoadConfigAction;
         public static Action SaveConfigAction;
 
-        private const string NameFile = "Users.reg";
+        private const string NameFile = @"files/Users.reg";
         private readonly static Manager _manager = new Manager(NameFile);
 
         static RegistrationManager()
